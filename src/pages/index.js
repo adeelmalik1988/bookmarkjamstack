@@ -50,10 +50,10 @@ export default function Home() {
 
     }} >
 
-        <Heading>  
-          ADD BOOKMARK
-          </Heading>
         <br />
+        <Heading>  
+          ADD BOOKMARK APP
+          </Heading>
         <Heading> Netlify, Graphql, Faunadb </Heading>
         <br />
       </Flex>
