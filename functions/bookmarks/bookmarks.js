@@ -21,6 +21,7 @@ type Query {
   }
   type Mutation {
     addBookmark(url: String!, desc: String!): Bookmark
+    deleteBookmark(id: ID!): Bookmark
   }
   
   `
@@ -45,7 +46,7 @@ const resolvers = {
         console.log(result.data)
         return result.data.map(d => {
           return {
-            id: d.ts,
+            id: d.ref.id,
             url: d.data.url,
             desc: d.data.desc,
           }
@@ -76,8 +77,21 @@ const resolvers = {
         console.log(err)
 
       }
+    },
+    deleteBookmark: async (_, { id }) => {
+      console.log("id", id)
+      try {
+        const result =  await client.query(
+          q.Delete(
+              q.Ref(q.Collection("bookmark"), id)
+              
+          )
+      )
+      console.log(result)
 
-
+      }catch(err){
+        console.log("error: ",err)
+      }
 
     }
   }

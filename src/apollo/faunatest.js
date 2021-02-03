@@ -22,8 +22,15 @@ console.log(dotenv);
 
                 //     })
                 // )
-                const result = await client.query(
-                    q.Paginate(q.Match(q.Collection("bookmark")))
+                // const result = await client.query(
+                //     q.Paginate(q.Match(q.Collection("bookmark")))
+                // )
+
+                const result =  await client.query(
+                    q.Delete(
+                        q.Ref(q.Collection("bookmark"), "289418389237006854")
+                        
+                    )
                 )
 
 

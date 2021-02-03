@@ -1,7 +1,7 @@
 import React, { useRef } from "react"
 import { useQuery, useMutation } from "@apollo/client"
 import gql from "graphql-tag"
-import { Button, Container, Input, Label, Flex, Heading } from "theme-ui"
+import { Button, Container, Input, Label, Flex, Heading, Box } from "theme-ui"
 
 
 
@@ -21,9 +21,22 @@ const AddBookmarkMutation = gql`
     }
   }`
 
+const DeleteBookmarkMutation = gql`
+  mutation deleteBookmark($id: ID!){
+
+    deleteBookmark(id: $id){
+      id
+      url
+      desc
+    }
+  }
+`
+
+
 export default function Home() {
   const { loading, error, data, refetch } = useQuery(BookmarksQuery)
   const [addBookmark] = useMutation(AddBookmarkMutation)
+  const [deleteBookmark] = useMutation(DeleteBookmarkMutation)
   const urlRef = useRef()
   const descRef = useRef()
   let textField;
@@ -45,13 +58,15 @@ export default function Home() {
 
   return (
     <Container sx={{ marginTop: 2 }} >
-      <Flex sx={{flexDirection: "column",
-      textAlign: "center"
+      <Flex sx={{
+        flexDirection: "column",
+        textAlign: "center"
 
-    }} >
+      }} >
+
 
         <br />
-        <Heading>  
+        <Heading>
           ADD BOOKMARK APP
           </Heading>
         <Heading> Netlify, Graphql, Faunadb </Heading>
@@ -72,11 +87,14 @@ export default function Home() {
             variables: {
               url: urlRef.current.value,
               desc: descRef.current.value
-            }
+            },
+            refetchQueries: [{
+              query: BookmarksQuery
+            }]
           });
           urlRef.current.value = "";
           descRef.current.value = "";
-          await refetch()
+          // await refetch()
 
         }}
 
@@ -92,18 +110,35 @@ export default function Home() {
 
 
       </Flex>
+      <br />
 
-      <Flex sx={{ flexDirection: "column" }} >
-        {loading ? <Flex> Loading... </Flex> : null}
-        {error ? <Flex> {error} </Flex> : null}
-        {!loading && !error && (data.bookmark.map(d => (
-          <li key={d.id} >
-            <a href={d.url} > {d.desc} </a>
-          </li>
-        )))
-        }</Flex>
+        <Flex sx={{ flexDirection: "column" }} >
+          {loading ? <Flex> Loading... </Flex> : null}
+          {error ? <Flex> {error} </Flex> : null}
+          {!loading && !error && (data.bookmark.map(d => (
+            <div>
+            <Flex key={d.id} sx={{
+              display: "flex",
+              justifyContent: "space-between",
+            }} >
 
+              <a href={d.url}
 
+              > {d.desc} </a>
+              <Button onClick={() => deleteBookmark({
+                variables: {
+                  id: d.id
+                },
+                refetchQueries: [{
+                  query: BookmarksQuery
+                }]
+              })} variant="secondary" >Delete</Button>
+            </Flex>
+            <hr />
+            </div>
+          )))
+          }</Flex>
+      
     </Container>
 
   )
